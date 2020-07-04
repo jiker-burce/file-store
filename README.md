@@ -81,15 +81,21 @@
           - $path,       路径
           - $filename,   文件名
           - $space       子项目空间，如：_for_xxx_sub_project
-    
+  
+### 2种路由模式
+- 前端访问 token 校验方式「/api/file/」
+  - 路由中间件中需要加上 'cors' => xxxx::class
+  - AuthServiceProvider.php
+    - 采用Jwt解析 Bearer token
+  - config/auth.php
+    - driver 需要调整为jwt
+- 端对端 签名校验方式「/api/admin/pass-through/file/」
+  - 路由中间件中需要加上 'auth:sign'
+  
 ### 注意
 > 需要在开发项目中增加如下配置
 - 在App\Models中加入文件，命名空间为`App\Models`。均可从本插件包中拷贝
   - Storage.php
   - UploadFile.php
-- 路由中间件中需要加上
-  - 'cors' => xxxx::class
-  - AuthServiceProvider.php
-    - 采用Jwt解析 Bearer token
-  - config/auth.php
-    - driver 需要调整为jwt
+
+

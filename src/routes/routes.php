@@ -24,9 +24,13 @@ $router->group([
 });
 
 $router->group([
-    'prefix' => 'api/file',
+    'prefix' => 'api/admin/pass-through/file',
     'namespace' => 'Jiker\FileStore\Controllers\Api',
-    'middleware' => ['cors', 'auth.signed']
+    'middleware' => ['auth.sign']
 ], function ($router) {
-    $router->post('wechat/rq-code', ['as' => 'file.wechat.mini.qr_code.store', 'uses' => 'WechatController@QRCodeFileStore']);
+    $router->get('config', 'FileController@config');
+    $router->post('upload', 'FileController@upload');
+    $router->post('qiniu-upload-token', 'FileController@qiniuUploadToken');
+    $router->post('qiniu-file-store', 'FileController@qiniuFileStore');
+    $router->post('wechat/rq-code', 'WechatController@QRCodeFileStore');
 });
