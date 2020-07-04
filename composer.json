@@ -1,0 +1,39 @@
+{
+    "name": "BruceGujinhe/file-store",
+    "version": "1.0.2",
+    "description": "文件文件上传及存储管理",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "gujinhe",
+            "email": "storefee@163.com"
+        }
+    ],
+    "require": {
+        "timjuly/laravel": "~5.8"
+    },
+    "minimum-stability": "dev",
+    "autoload": {
+        "classmap": [
+            "src/Controllers/Api"
+        ],
+        "psr-4": {
+            "Jiker\\FileStore\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Jiker\\FileStore\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "aliases": {
+                "FileStoreApi": "Jiker\\FileStore\\Facades\\FileStoreApi"
+            },
+            "providers": [
+                "Jiker\\FileStore\\JikerFileStoreServiceProvider"
+            ]
+        }
+    }
+}
