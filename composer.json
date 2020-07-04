@@ -1,6 +1,6 @@
 {
     "name": "jiker/file-store",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "文件文件上传及存储管理",
     "license": "MIT",
     "authors": [
@@ -12,7 +12,6 @@
     "require": {
         "timjuly/laravel": "~5.8"
     },
-    "minimum-stability": "dev",
     "autoload": {
         "classmap": [
             "src/Controllers/Api"
