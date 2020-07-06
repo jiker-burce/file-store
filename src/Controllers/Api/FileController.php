@@ -3,7 +3,6 @@
 namespace Jiker\FileStore\Controllers\Api;
 
 use URL;
-use Auth;
 use Qiniu;
 use Storage;
 use TimStorage;
@@ -168,7 +167,7 @@ class FileController extends Controller
         $f = UploadFile::create([
             'driver' => 'local',
             'bucket' => $bucket,
-            'user_id' => Auth::id(),
+            'user_id' => $request->input('user_id',null),
             'title' => $title,
             'name' => $name,
             'extension' => $extension,
@@ -286,6 +285,7 @@ class FileController extends Controller
         $name = $request->input('name');
         $title = $request->input('title');
         $space = $request->input('space');
+        $userId = $request->input('user_id',null);
         $extension = pathinfo($name, PATHINFO_EXTENSION);
 
         $old = UploadFile::where([
@@ -301,7 +301,7 @@ class FileController extends Controller
             'bucket' => $bucket,
             'space' => $space,
             'path' => $path,
-            'user_id' => Auth::id(),
+            'user_id' => $userId,
             'name' => $name,
             'title' => $title,
             'extension' => $extension,
