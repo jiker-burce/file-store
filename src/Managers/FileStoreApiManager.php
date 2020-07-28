@@ -35,6 +35,30 @@ class FileStoreApiManager
         return $uploadFile;
     }
     
+    public function generateFileFromUrl($bucket, $space, $folder, $url)
+    {
+        $fd = file_get_contents($url);
+        $fileName = last(explode('/',$url));
+        $localFullPath = storage_path('app/images/') . $fileName;
+        file_put_contents($localFullPath,$fd);
+    
+        // 上传七牛 并存储信息至 upload_files 表
+        $bu            = Qiniu::bucket($bucket);
+        $extension     = $extension = pathinfo($fileName, PATHINFO_EXTENSION);
+        $qiniuFullPath = $this->getQiniuFullPath($space, $folder, $extension);
+        $uploadFile    = $bu->putFile($qiniuFullPath, $localFullPath);
+    
+        $uploadFile->update([
+            'space' => $space,
+            'title' => $fileName,
+        ]);
+    
+        // 删除本地文件
+        unlink($localFullPath);
+    
+        return $uploadFile;
+    }
+    
     protected function getQiniuFullPath($space, $folder, $extension)
     {
         if (empty($space)) {
