@@ -39,6 +39,9 @@ class FileStoreApiManager
     {
         $fd = file_get_contents($url);
         $fileName = last(explode('/',$url));
+        if (empty($fileName)) { // 有的链接后缀不包含文件名和图片后缀，需要单独处理
+            $fileName = Str::random(10) . '.jpg';
+        }
         $localFullPath = storage_path('app/images/') . $fileName;
         file_put_contents($localFullPath,$fd);
     
