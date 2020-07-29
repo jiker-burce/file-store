@@ -37,29 +37,39 @@ class FileStoreApiManager
     
     public function generateFileFromUrl($bucket, $space, $folder, $url)
     {
-        $fd = file_get_contents($url);
-        $fileName = last(explode('/',$url));
-        if (empty($fileName)) { // 有的链接后缀不包含文件名和图片后缀，需要单独处理
-            $fileName = Str::random(10) . '.jpg';
+        try {
+            $opts = array(
+                'http' => array(
+                    'method'  => "GET",
+                    'timeout' => 5, //单位秒
+                )
+            );
+            $fd = file_get_contents($url, false, stream_context_create($opts));
+            $fileName = last(explode('/', $url));
+            if (empty($fileName)) { // 有的链接后缀不包含文件名和图片后缀，需要单独处理
+                $fileName = Str::random(10) . '.jpg';
+            }
+            $localFullPath = storage_path('app/images/') . $fileName;
+            file_put_contents($localFullPath, $fd);
+    
+            // 上传七牛 并存储信息至 upload_files 表
+            $bu = Qiniu::bucket($bucket);
+            $extension = $extension = pathinfo($fileName, PATHINFO_EXTENSION);
+            $qiniuFullPath = $this->getQiniuFullPath($space, $folder, $extension);
+            $uploadFile = $bu->putFile($qiniuFullPath, $localFullPath);
+    
+            $uploadFile->update([
+                'space' => $space,
+                'title' => $fileName,
+            ]);
+    
+            // 删除本地文件
+            unlink($localFullPath);
+    
+            return $uploadFile;
+        } catch (\Exception $e) {
+            return null;
         }
-        $localFullPath = storage_path('app/images/') . $fileName;
-        file_put_contents($localFullPath,$fd);
-    
-        // 上传七牛 并存储信息至 upload_files 表
-        $bu            = Qiniu::bucket($bucket);
-        $extension     = $extension = pathinfo($fileName, PATHINFO_EXTENSION);
-        $qiniuFullPath = $this->getQiniuFullPath($space, $folder, $extension);
-        $uploadFile    = $bu->putFile($qiniuFullPath, $localFullPath);
-    
-        $uploadFile->update([
-            'space' => $space,
-            'title' => $fileName,
-        ]);
-    
-        // 删除本地文件
-        unlink($localFullPath);
-    
-        return $uploadFile;
     }
     
     protected function getQiniuFullPath($space, $folder, $extension)
